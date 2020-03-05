@@ -1,3 +1,0 @@
-# SOONGMUN
-
-GOGO
