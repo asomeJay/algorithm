@@ -23,6 +23,7 @@ inline void init();
 void medication_management(int count, int index, bool[MAX_THICK][MAX_WIDTH]);
 void medication_administration(int number, bool);
 void medication_recovery(int index, bool[MAX_THICK][MAX_WIDTH], bool[MAX_THICK][MAX_WIDTH]);
+void film_copy(bool[MAX_THICK][MAX_WIDTH], bool[MAX_THICK][MAX_WIDTH]);
 
 int main(void) {
 	int t_case;
@@ -73,8 +74,7 @@ void init() {
 }
 
 void input() {
-	scanf("%d %d %d", &thickness, &width, &accept_criteria);
-	//cin >> thickness >> width >> accept_criteria;
+	cin >> thickness >> width >> accept_criteria;
 	for (int i = 1; i <= thickness; i++) {
 		for (int j = 1; j <= width; j++) {
 			cin >> protective_film[i][j];
@@ -92,12 +92,12 @@ void medication_management(int count, int index, bool film[MAX_THICK][MAX_WIDTH]
 	if (count == thickness)
 		return;
 
+
 	bool save[MAX_THICK][MAX_WIDTH];
 	for (int i = index; i <= thickness; i++) {
 		medication_recovery(i, save, film);
 
 		for (int color = 0; color <= 1; color++) {
-
 			medication_administration(i, color);
 			medication_management(count + 1, i + 1, film);
 			medication_recovery(i, film, save);
@@ -108,6 +108,14 @@ void medication_management(int count, int index, bool film[MAX_THICK][MAX_WIDTH]
 void medication_administration(int number, bool type) {
 	for (int i = 1; i <= width; i++) {
 		protective_film[number][i] = type;
+	}
+}
+
+void film_copy(bool src[MAX_THICK][MAX_WIDTH], bool des[MAX_THICK][MAX_WIDTH]) {
+	for (int i = 1; i <= thickness; i++) {
+		for (int j = 1; j <= width; j++) {
+			des[i][j] = src[i][j];
+		}
 	}
 }
 
