@@ -26,6 +26,8 @@ void medication_recovery(int index, bool[MAX_THICK][MAX_WIDTH], bool[MAX_THICK][
 void film_copy(bool[MAX_THICK][MAX_WIDTH], bool[MAX_THICK][MAX_WIDTH]);
 
 int main(void) {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
 	int t_case;
 	cin >> t_case;
 
@@ -70,7 +72,6 @@ bool performance_test() {
 
 void init() {
 	memset(protective_film, false, sizeof protective_film);
-	n_of_medications = 987654321;
 }
 
 void input() {
@@ -80,6 +81,7 @@ void input() {
 			cin >> protective_film[i][j];
 		}
 	}
+	n_of_medications = accept_criteria;
 }
 
 void medication_management(int count, int index, bool film[MAX_THICK][MAX_WIDTH]) {
@@ -89,8 +91,6 @@ void medication_management(int count, int index, bool film[MAX_THICK][MAX_WIDTH]
 		n_of_medications = min(n_of_medications, count);
 		return;
 	}
-	if (count == thickness)
-		return;
 
 
 	bool save[MAX_THICK][MAX_WIDTH];
