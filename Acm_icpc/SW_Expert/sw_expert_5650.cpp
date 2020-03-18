@@ -22,7 +22,6 @@ const int dc[4] = { 0, 1, 0,-1 };
 
 void init();
 void input();
-bool is_range(int r, int c);
 pair<int,int> into_the_hall(int,int);
 int hit_the_wall(int,int,int);
 
@@ -39,11 +38,9 @@ int main(void) {
 	for (int x = 1; x <= t_case; x++) {
 		input();
 		wall();
-
 		for (int i = 1; i <= N_map; i++) {
 			for (int j = 1; j <= N_map; j++) {
 				for (int k = 0; k < 4; k++) {
-
 					if (map[i][j] == 0) {
 						dfs(i, j, k);
 					}
@@ -83,10 +80,6 @@ void input() {
 	}
 }
 
-bool is_range(int r, int c) {
-	return r >= 1 && r <= N_map && c >= 1 && c <= N_map;
-}
-
 inline int dir_change(int dir) {
 	switch (dir) {
 	case N:
@@ -105,7 +98,6 @@ void dfs(int r, int c, int dir) {
 	tr = r; tc = c; tdir = dir; tcnt = 0;
 
 	while (true) {
-		
 		tr += dr[tdir];
 		tc += dc[tdir];
 
@@ -113,9 +105,6 @@ void dfs(int r, int c, int dir) {
 			Ans = max(Ans, tcnt);
 			return;
 		}
-			
-		if (map[tr][tc] == EMPTY)
-			dp[tr][tc][tdir] = tcnt;
 
 		if (map[tr][tc] != EMPTY) {
 			if (map[tr][tc] >= 1 && map[tr][tc] <= 5) { //  ºí·°¿¡ ºÎµúÈû
