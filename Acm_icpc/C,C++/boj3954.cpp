@@ -13,12 +13,28 @@
 #define PLUS 1
 
 using namespace std;
-
+class infin {
+public:
+	bool same;
+	int point_which, position;
+	int num;
+	infin(int a) {
+		same = false;
+		num = 0;
+		point_which = 0;
+		position = a;
+	}
+};
+vector<infin> ite;
 int sm, sc, si, pointer;
+bool jumps;
+bool intro[MAX_SCI];
+bool outro[MAX_SCI];
+
 int loop_position[MAX_SCI];
 
 void move_pointer(int dir);
-void calculate(vector<int> &num_array, int mode);
+void calculate(vector<int>& num_array, int mode);
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -30,7 +46,7 @@ int main(void) {
 	for (int t = 1; t <= nt_case; t++) {
 		int inst_pos, program_counter, max_ind, char_pointer, t_p;
 		inst_pos = program_counter = max_ind = char_pointer = 0;
-
+		jumps = false;
 		stack<int> s_pointer;
 
 		cin >> sm >> sc >> si;
@@ -40,6 +56,9 @@ int main(void) {
 		vector<int>num_array(sm, 0);
 
 		for (i = 0; i < sc; i++) {
+			intro[i] = false;
+			outro[i] = false;
+
 			cin >> code[i];
 			if (code[i] == '[') {
 				s_pointer.push(i);
@@ -50,13 +69,13 @@ int main(void) {
 				s_pointer.pop();
 				loop_position[t_p] = i;
 				loop_position[i] = t_p;
+				ite.push_back(i);
 			}
 		}
 
 		for (i = 0; i < si; i++) cin >> input_char[i];
-
+		max_ind = -1;
 		while ((program_counter <= MAX_COUNT) && (inst_pos != sc)) {
-			max_ind = max(max_ind, inst_pos);
 			switch (code[inst_pos]) {
 			case '-': calculate(num_array, MINUS);
 				break;
@@ -69,11 +88,20 @@ int main(void) {
 			case '[':
 				if (num_array[pointer] == 0) {
 					inst_pos = loop_position[inst_pos];
+					jumps = true;
 				}
+				else {
+					intro[inst_pos] = true;
+				}
+
 				break;
 			case ']':
 				if (num_array[pointer] != 0) {
 					inst_pos = loop_position[inst_pos];
+					intro[inst_pos] = true;
+				}
+				else {
+					outro[inst_pos] = true;
 				}
 				break;
 			case ',':
@@ -90,8 +118,16 @@ int main(void) {
 
 		if (inst_pos == sc)
 			cout << "Terminates\n";
-		else 
-			cout << "Loops " << loop_position[max_ind] << " " << max_ind << '\n';
+		else {
+			for (int i = 0; i < sc; i++) {
+				if (code[i] == ']') {
+					if (outro[i] == false && intro[loop_position[i]] == true) {
+						cout << "Loops " << loop_position[i] << " " << i << '\n';
+						break;
+					}
+				}
+			}
+		}
 	}
 	return 0;
 }
@@ -114,7 +150,7 @@ void move_pointer(int dir) {
 	}
 }
 
-void calculate(vector<int> &num_array, int mode) {
+void calculate(vector<int>& num_array, int mode) {
 	switch (mode) {
 	case MINUS:
 		if (num_array[pointer] == 0)
