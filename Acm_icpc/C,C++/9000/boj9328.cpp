@@ -1,5 +1,8 @@
 /* 열쇠 */
-
+/* BFS로 풀면된다. 
+현재 방향에서 사방의 칸을 추가하는 방식으로 진행되는데,
+중복이 많이 발생할 수 있으므로 추가할 때마다 방문 체크를 하는게 낫다. 
+*/
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -23,7 +26,8 @@ void bfs(int r, int c);
 int main(void) {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL); cout.tie(NULL);
-	int tk; cin >> tk;
+	int tk; 
+	cin >> tk;
 
 	for (int i = 0; i < tk; i++) {
 		init();
@@ -46,11 +50,9 @@ void bfs(int r, int c) {
 	search.push({ r,c });
 
 	while (!search.empty()) {
-
 		int tr = search.front().first;
 		int tc = search.front().second;
 		search.pop();
-		is_visit[tr][tc] = true;
 
 		if (map[tr][tc] == '$') {
 			paper++;
@@ -80,8 +82,8 @@ void bfs(int r, int c) {
 				}
 				map[nr][nc] = '.';
 			}
-			search.push({ nr, nc });
 
+			search.push({ nr, nc });
 		}
 	}
 }
