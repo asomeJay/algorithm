@@ -1,59 +1,60 @@
 /* 2342 : Dance Dance Revolution */
 
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstring>
 
-#define SAME 1
-#define CENTER 2
-#define ADJACENT 3
-#define OPPOSITE 4
+#define MAX 100000
 
 using namespace std;
 
-pair<int, int> foot;
+int depth, dp[5][5][100000];
 
-inline bool is_already(int);
-inline bool is_middle();
+vector<int> input;
 
+int dfs(int, int, int);
+int price(int now, int will);
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL); cout.tie(NULL);
 
-	int input, power;
-
-	foot.first = 0;
-	foot.second = 0;
-	power = 0;
+	int in;
 
 	while (1) {
-		cin >> input;
-		if (input == 0)
+		cin >> in;
+		if (in == 0)
 			break;
-
-		if (is_already(input)) { // already one foot is there
-			power += SAME;
-		}
-		else if (is_middle()) { // at least one foot on the middle
-			power += CENTER;
-		}
-		else { // adjacent
-			power += ADJACENT;
-		}
+		input.push_back(in);
 	}
 
-	cout << power;
+	depth = (int)input.size();
+
+	memset(dp, -1, sizeof(dp));
+
+	cout << dfs(0, 0, 0) << '\n';
 	
 	return 0;
 }
 
-inline bool is_already(int number) {
-	if (foot.first == number || foot.second == number)
-		return true;
-	return false;
+int dfs(int _left, int _right, int dep) {
+	if (dep == depth) return 0;
+	if (dp[_left][_right][dep] != -1) return dp[_left][_right][dep];
+
+	int left = price(_left, input[dep]) + dfs(input[dep], _right, dep + 1);
+	int right = price(_right, input[dep]) + dfs(_left, input[dep], dep + 1);
+
+	return dp[_left][_right][dep] = min(left, right);
 }
 
-inline bool is_middle() {
-	if (foot.first == 0 || foot.second == 0)
-		return true;
-	return false;
+int price(int now, int will) {
+	if (now == will)
+		return 1;
+	else if (now == 0)
+		return 2;
+	else if (abs(now - will) == 2)
+		return 4;
+	else 
+		return 3;
 }
