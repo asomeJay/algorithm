@@ -7,8 +7,8 @@
 
 using namespace std;
 
-int N, M;
-bool is_desc[32001], is_used[32001];
+int N, M, ancestor_of_[32001];
+bool is_used[32001];
 vector<int> connection[32001];
 priority_queue<int, vector<int>, greater<int>> now_ancestor;
 
@@ -31,35 +31,36 @@ int main(void) {
 
 	while (!now_ancestor.empty()) {
 		int now =  now_ancestor.top();
-		if (is_used[now])
-			continue;
-		is_used[now] = true;
+		now_ancestor.pop();
 
 		cout << now << " ";
 
-		now_ancestor.pop();
-
 		for (auto n : connection[now]) {
-			if (is_used[n]) continue;
-			now_ancestor.push(n);
+			if (!ancestor_of_[n]) 
+				continue;
+			ancestor_of_[n]--;
+
+			if(!ancestor_of_[n])
+				now_ancestor.push(n);
 		}
 	}
 
 	return 0;
 }
 
-void parent_child(int par, int chi) {
-	is_desc[chi] = true;
-	connection[par].push_back(chi);
+void parent_child(int par, int child) {
+	ancestor_of_[child]++;
+	connection[par].push_back(child);
 
 	return;
 }
 
 void who_ancestor() {
 	for (int i = 1; i <= N; i++) {
-		if (is_desc[i] == false) {
+		if (ancestor_of_[i] == 0) {
 			now_ancestor.push(i);
 		}
 	}
+
 	return;
 }
