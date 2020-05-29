@@ -104,21 +104,6 @@ void solve() {
 }
 
 bool token_move(int t_index, int flag, int turn) {
-	cout << "TURN : " << turn << " t_index : " << t_index << " " << "dir : " << token_order[t_index].dir << endl;
-	for (int i = 1; i <= N; i++) {
-		for (int j = 1; j <= N; j++) {
-			if (token_map[i][j].empty())
-				cout << "0 ";
-			else {
-				for (auto n : token_map[i][j])
-					cout << n;
-				cout << " ";
-			}
-		}
-		cout << endl;
-	}
-	cout << endl;
-
 	node& cur_tk = token_order[t_index];
 	stack<int> temp;
 
@@ -129,10 +114,11 @@ bool token_move(int t_index, int flag, int turn) {
 	int nc = cur_tk.col + dc[cur_tk.dir];
 
 	if (map[nr][nc] == BLUE) {
+		if (flag == 1)
+			return false;
 		token_order[t_index].dir = change_dir(token_order[t_index].dir);
 		if (flag == 0)
 			return token_move(t_index, 1, turn);
-		else return false;
 	}
 
 	else if (map[nr][nc] == RED) {
@@ -141,8 +127,7 @@ bool token_move(int t_index, int flag, int turn) {
 		while (token_map[cr][cc][i] != t_index) {
 			int c_index = token_map[cr][cc][i];
 
-			temp.push(c_index);
-			//token_map[nr][nc].push_back(c_index);
+			token_map[nr][nc].push_back(c_index);
 			token_order[c_index].row = nr;
 			token_order[c_index].col = nc;
 			
@@ -150,19 +135,11 @@ bool token_move(int t_index, int flag, int turn) {
 			i--;
 		}
 
-		temp.push(t_index);
-		//token_map[nr][nc].push_back(c_index);
+		token_map[nr][nc].push_back(t_index);
 		token_map[cr][cc].pop_back();
 
 		token_order[t_index].row = nr;
 		token_order[t_index].col = nc;
-
-		while (!temp.empty()) {
-			token_map[nr][nc].push_back(temp.top());
-			temp.pop();
-		}
-		reverse(token_map[nr][nc].begin(), token_map[nr][nc].end());
-
 	} 
 	else if (map[nr][nc] == WHITE) {
 		i = token_map[cr][cc].size() - 1;
@@ -171,7 +148,6 @@ bool token_move(int t_index, int flag, int turn) {
 			int c_index = token_map[cr][cc][i];
 
 			temp.push(c_index);
-			//token_map[nr][nc].push_back(c_index);
 			token_order[c_index].row = nr;
 			token_order[c_index].col = nc;
 
@@ -180,7 +156,6 @@ bool token_move(int t_index, int flag, int turn) {
 		}
 
 		temp.push(t_index);
-		//token_map[nr][nc].push_back(c_index);
 		
 		token_map[cr][cc].pop_back();
 
