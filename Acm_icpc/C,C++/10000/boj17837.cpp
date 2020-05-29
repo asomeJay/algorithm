@@ -3,10 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <stack>
 
-#define W 0
-#define R 1
-#define B 2
+#define WHITE 0
+#define RED 1
+#define BLUE 2
 #define R 1
 #define L 2
 #define U 3
@@ -32,20 +33,12 @@ int dr[5] = { 0,0,0,-1 ,1};
 int dc[5] = { 0, 1, -1, 0, 0 };
 int map[14][14];
 
-//vector<pair<int, int>> token[14][14];
-//vector<node> token_sort_by_order;
-vector<node> token;
-vector<pair<int,int>> parent_child;
-
-int find_parent(int u);
-int find_child(int u);
-int unions(int v, int u);
-void token_reverse()
-void update();
+vector<int> token_map[14][14];
+vector<node> token_order;
 
 void input();
 void solve();
-bool move_token(int, int, int, int, int);
+bool token_move(int, int, int);
 
 int change_dir(int dir) {
 	switch (dir) {
@@ -67,16 +60,13 @@ int main(void) {
 }
 
 void input() {
-
 	cin >> N >> K;
-	//token_sort_by_order.resize(K);
-	parent_child.resize(K + 1, { -1, -1});
 
 	for (int i = 0; i <= N + 1; i++) {
-		map[0][i] = B;
-		map[N + 1][i] = B;
-		map[i][0] = B;
-		map[i][N + 1] = B;
+		map[0][i] = BLUE;
+		map[N + 1][i] = BLUE;
+		map[i][0] = BLUE;
+		map[i][N + 1] = BLUE;
 	}
 
 	for (int i = 1; i <= N; i++) {
@@ -85,23 +75,25 @@ void input() {
 		}
 	}
 
+	token_order.push_back({ 0,0,0,0 });
 
-	for (int i = 0; i < K; i++) {
+	for (int i = 1; i <= K; i++) {
 		int a, b, c;
 		cin >> a >> b >> c;
 
-		//token[a][b].push_back({ c, 0 });
-		token.push_back({ a,b,c,i + 1 });
-		//token_sort_by_order.push_back({ a, b, c, i + 1 });
-		
+		token_map[a][b].push_back(i);
+		token_order.push_back({ a,b,c, i});
 	}
 }
 
 void solve() {
 	int turn;
 	for (turn = 1; turn <= 1000; turn++) {
-		for (int order = 0; order < token.size(); order++) {
-			
+		for (int i = 1; i <= K; i++) {
+			if (token_move(i, 0, turn)) {
+				cout << turn << '\n';
+				return;
+			}
 		}
 	}
 
@@ -111,62 +103,101 @@ void solve() {
 	return;
 }
 
-bool move_token(int t_index, int flag, int turn) {
-	node& cur_tk = token[t_index];
+bool token_move(int t_index, int flag, int turn) {
+	cout << "TURN : " << turn << " t_index : " << t_index << " " << "dir : " << token_order[t_index].dir << endl;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			if (token_map[i][j].empty())
+				cout << "0 ";
+			else {
+				for (auto n : token_map[i][j])
+					cout << n;
+				cout << " ";
+			}
+		}
+		cout << endl;
+	}
+	cout << endl;
 
+	node& cur_tk = token_order[t_index];
+	stack<int> temp;
+
+	int i;
+	int cr = cur_tk.row;
+	int cc = cur_tk.col;
 	int nr = cur_tk.row + dr[cur_tk.dir];
 	int nc = cur_tk.col + dc[cur_tk.dir];
 
-	if (map[nr][nc] == B) {
-		cur_tk.dir = change_dir(cur_tk.dir);
+	if (map[nr][nc] == BLUE) {
+		token_order[t_index].dir = change_dir(token_order[t_index].dir);
 		if (flag == 0)
-			return move_token(t_index, flag + 1, turn);
+			return token_move(t_index, 1, turn);
+		else return false;
 	}
 
-	else if (map[nr][nc] == R) {
-		reverse(token[nr][nc].begin(), token[nr][nc].end());
+	else if (map[nr][nc] == RED) {
+		i = token_map[cr][cc].size() - 1;
 
-		token[r][c].clear();
-		token[nr][nc][0].second = turn;
-	} 
-	else if (map[nr][nc] == W) {
-		/* map */
-		for (int i = 0; i < token[r][c].size(); i++) {
-			token[nr][nc].push_back(token[r][c][i]);
+		while (token_map[cr][cc][i] != t_index) {
+			int c_index = token_map[cr][cc][i];
+
+			temp.push(c_index);
+			//token_map[nr][nc].push_back(c_index);
+			token_order[c_index].row = nr;
+			token_order[c_index].col = nc;
+			
+			token_map[cr][cc].pop_back();
+			i--;
 		}
-		token[r][c].clear();
-		token[nr][nc][0].second = turn;
-	
-		/* token_order */
 
+		temp.push(t_index);
+		//token_map[nr][nc].push_back(c_index);
+		token_map[cr][cc].pop_back();
+
+		token_order[t_index].row = nr;
+		token_order[t_index].col = nc;
+
+		while (!temp.empty()) {
+			token_map[nr][nc].push_back(temp.top());
+			temp.pop();
+		}
+		reverse(token_map[nr][nc].begin(), token_map[nr][nc].end());
+
+	} 
+	else if (map[nr][nc] == WHITE) {
+		i = token_map[cr][cc].size() - 1;
+
+		while (token_map[cr][cc][i] != t_index) {
+			int c_index = token_map[cr][cc][i];
+
+			temp.push(c_index);
+			//token_map[nr][nc].push_back(c_index);
+			token_order[c_index].row = nr;
+			token_order[c_index].col = nc;
+
+			token_map[cr][cc].pop_back();
+			i--;
+		}
+
+		temp.push(t_index);
+		//token_map[nr][nc].push_back(c_index);
+		
+		token_map[cr][cc].pop_back();
+
+		token_order[t_index].row = nr;
+		token_order[t_index].col = nc;
+
+		while (!temp.empty()) {
+			token_map[nr][nc].push_back(temp.top());
+			temp.pop();
+		}
 	}
+
 	else {
 		cout << "ERROR at MOVE\n";
 	}
 
-	if (token[nr][nc].size() >= 4) 
+	if (token_map[nr][nc].size() >= 4) 
 		return true;
 	return false;
 }
-
-int find_parent(int u) {
-	if (parent_child[u].first == -1) return u;
-	else return parent_child[u].first = find_parent(parent_child[u].first);
-}
-
-int find_child(int u) {
-	if (parent_child[u].second == -1) return u;
-	else return parent_child[u].second = find_parent(parent_child[u].second);
-}
-
-int unions(int u, int v) {
-	int pv = find_parent(v);
-	int pu = find_parent(u);
-
-	int cv = find_child(v);
-	int cu = find_child(u);
-
-	parent_child[pu].first = pv;
-	parent_child[cv].second = cu;
-}
-
