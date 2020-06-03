@@ -43,18 +43,18 @@ void input() {
 
 void solve() {
 	int maxi = 0, max_index = 0;
-
+	int sum, max_sum = 987654321;
 	for (int i = 1; i <= 4; i++) {
-		if (maxi <= col[i]) {
-			maxi = col[i];
-			max_index = i;
+		sum = 3 + N-1;
+		for (int j = 1; j <= N-2; j++){
+			if (i < row[j]) {
+				sum += min(row[j] - i, i + 4 - row[j]);
+			} 
+			else {
+				sum += min(i - row[j], row[j] + 4 - i);
+			}
 		}
+		max_sum = min(max_sum, sum);
 	}
-	int sum = 3 + N-1;
-	cout << max_index << endl;
-	for (int i = 1; i <= N-2; i++) {
-		cout << i << " " << sum << " " << row[i] << endl;
-		sum += (min(abs(max_index - row[i]), abs(row[i] + 4 - max_index)));
-	}
-	cout << sum << '\n';
+	cout << max_sum << '\n';
 }
