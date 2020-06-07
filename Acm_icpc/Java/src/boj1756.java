@@ -6,9 +6,8 @@ public class boj1756 {
     static BufferedReader br;
     static StringTokenizer st;
 
-    static int D, N, end, current_smallest;
+    static int D, N;
     static int []oven, pizza;
-    static Map<Integer, Integer> check;
 
     public static void main(String[] args) throws Exception {
         bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -33,7 +32,7 @@ public class boj1756 {
             pizza[i] = Integer.parseInt(st.nextToken());
         }
 
-        int index = 1, i = D;
+        int index = 1, i;
         for(i = D; i >0; i--){
             if(pizza[index] > oven[i]) continue;
             index++;
