@@ -2,55 +2,62 @@ import java.util.*;
 import java.io.*;
 
 class Person{
-    int parent, value;
-    String name;
+    String parent;
+    int value;
 
-    Person(int number, int value, String name){
-        this.parent = number;
-        this.name = name;
-        this.value = value;
+    Person(String name){
+        this.parent = name;
+        this.value = 1;
     }
 }
 
 class Relation{
-    ArrayList<Person> relation;
+    HashMap<String, Person> relation;
 
     Relation(){
-        relation = new ArrayList<Person>();
+        this.relation = new HashMap<String, Person>();
     }
 
-    void addFriend(String a, String b){
-       relation.
+    void clear(){
+        relation.clear();
+    }
+    void addPerson(String s) {
+        if(relation.containsKey(s))
+            return;
+
+        relation.put(s, new Person(s));
     }
 
-    int unionParent(int a, int b){
-        int aParent = findParent(a);
-        int bParent = findParent(b);
+    int unionParent(String a, String b){
+        String aPar = findParent(a);
+        String bPar = findParent(b);
 
-        if(aParent == bParent) return relation.get(aParent).value;
+        if(aPar.compareToIgnoreCase(bPar) == 0){
+            return relation.get(aPar).value;
+        }
 
-        Person aPerson = relation.get(aParent);
-        Person bPerson = relation.get(bParent);
+        Person aPer = relation.get(aPar);
+        Person bPer = relation.get(bPar);
 
-        if(aPerson.value > bPerson.value){
-            aPerson.value += bPerson.value;
-            bPerson.parent = aParent;
+        if(aPer.value > bPer.value){
+            aPer.value += bPer.value;
+            bPer.parent = aPar;
 
-            return aPerson.value;
+            return aPer.value;
         } else {
-            bPerson.value += aPerson.value;
-            aPerson.parent = bParent;
+            bPer.value += aPer.value;
+            aPer.parent = bPar;
 
-            return bPerson.value;
+            return bPer.value;
         }
     }
 
-    int findParent(int a){
+    String findParent(String a){
         if(relation.get(a).parent == a){
             return a;
         } else {
-            int temp = relation.get(a).parent;
-            return relation.get(a).parent = relation.get(temp).parent;
+            String temp = relation.get(a).parent;
+            return relation.get(a).parent = findParent(temp);
         }
     }
 }
@@ -62,6 +69,7 @@ public class boj4195 {
 
     static int testCase, friend;
     static String friend1, friend2;
+    static Relation relation = new Relation();
 
     public static void main(String[] args) throws Exception {
         st = new StringTokenizer(br.readLine());
@@ -69,8 +77,11 @@ public class boj4195 {
 
         for(int i = 0; i < testCase; i++){
             input();
-            solve();
+            bw.flush();
+            relation.clear();
         }
+        br.close();
+        bw.close();
     }
 
     static void input() throws IOException {
@@ -82,11 +93,10 @@ public class boj4195 {
             friend1 = st.nextToken();
             friend2 = st.nextToken();
 
+            relation.addPerson(friend1);
+            relation.addPerson(friend2);
+
+            bw.write(relation.unionParent(friend1, friend2) + "\n");
         }
     }
-
-    static void solve() throws Exception {
-
-    }
-
 }
