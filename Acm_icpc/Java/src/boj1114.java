@@ -18,30 +18,64 @@ public class boj1114 {
     }
 
     static void input() throws Exception {
+        ANS = ANS_INDEX = 0;
         st = new StringTokenizer(br.readLine());
         L = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
 
-        pos = new int[10001];
-        st = new StringTokenizer(br.readLine());
+        pos = new int[K+2];
 
-        for(int i = 0; i < K; i++){
+        st = new StringTokenizer(br.readLine());
+        pos[0] = 0;
+
+        for(int i = 1; i <= K; i++){
             pos[i] = Integer.parseInt(st.nextToken());
         }
+        pos[K+1] = L;
+
+        Arrays.sort(pos);
     }
 
     static void solve(){
-        int start, end, dist;
-        start = 0; end = pos[0]; dist = end-start;
-        for(int i = 1; i < K; i++){
-           dist = end - start;
-           if(end + dist <= pos[i])
-               continue;
-           start = end; end = pos[i];
-        }
+        int left, right, middle,i, start, cutting, flag;
+        left = 1; right = L;
 
-        ANS = dist;
-        ANS_INDEX = end;
+        while(left <= right){
+           middle = (left + right) / 2;
+           cutting = C;
+           flag = 0;
+           //System.out.println(" " + left + " " + middle + " " + right+"\n");
+
+           start = pos[K+1];
+           for(i = K; i >= 0; i--){
+                if(pos[i] + middle >= start) continue;
+                if(pos[i+1] - pos[i] > middle) {
+                    flag = 1;
+                    break;
+                }
+                if(left == right)
+                    ANS = Math.max(ANS, start-pos[i+1]);
+
+                start = pos[i+1];
+                cutting--;
+           }
+           if(left == right){
+               ANS = Math.max(ANS, start);
+               if(cutting == 0){
+                   ANS_INDEX = start;
+               } else {
+                   ANS_INDEX = pos[1];
+               }
+
+               return;
+           }
+
+           if(cutting < 0 || flag == 1){
+               left = middle + 1;
+           } else {
+               right = middle;
+           }
+        }
     }
 }
