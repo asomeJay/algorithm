@@ -34,7 +34,7 @@ public class boj1114 {
         }
         pos[K+1] = L;
 
-        Arrays.sort(pos);
+        Arrays.sort(pos); // sort 함수를 잘 쓰자...
     }
 
     static void solve(){
