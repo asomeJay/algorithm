@@ -23,9 +23,6 @@ public class boj1166 {
         W = Integer.parseInt(st.nextToken());
         H = Integer.parseInt(st.nextToken());
 
-       /* L = Float.parseFloat(st.nextToken()) / N;
-        W = Float.parseFloat(st.nextToken()) / N;
-        H = Float.parseFloat(st.nextToken()) / N;*/
     }
 
     static void solve(){
