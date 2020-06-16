@@ -66,7 +66,7 @@ public class boj1208 {
                         return -1 * o1.compareTo(o2);
                     }
                 });
-
+/*
         for(int i = 0; i < minus.length; i++){
             System.out.print(minus[i] + " ");
         }
@@ -74,7 +74,7 @@ public class boj1208 {
         for(int i = 0; i < plus.length; i++) {
             System.out.print(plus[i] + " ");
         }
-        System.out.println();
+        System.out.println();*/
     }
 
     static void solve() throws Exception{
