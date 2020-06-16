@@ -12,6 +12,8 @@ public class boj1208 {
     public static void main(String[] args) throws Exception{
         input();
         solve();
+        if(S == 0)
+            ANS--;
         bw.write(ANS + "\n"); bw.flush(); bw.close();
     }
 
@@ -27,31 +29,27 @@ public class boj1208 {
             int temp = Integer.parseInt(st.nextToken());
             arr[i] = temp;
         }
-        for(Integer i: arr){
-            System.out.println(i);
-        }
+
         int half = N / 2;
         minus = new Integer[1 << (N-half)];
         plus = new Integer[1 << half];
 
-        for(int i = 0; i < 1 << (N-half); i++){
+        for(int i = 0; i < (1 << (N-half)); i++){
+            minus[i] = 0;
             for(int j = 0; j < N-half; j++){
-                System.out.println((i & (1 << j)) + " " + j + " " +(1 << j));
                 if((i & (1 << j)) == (1 << j)){
                     minus[i] += arr[j];
                 }
             }
         }
 
-        for(int i = 0; i < 1 << half; i++){
+        for(int i = 0; i < (1 << half); i++){
+            plus[i] = 0;
             for(int j = 0; j < half; j++){
                 if((i & (1 << j)) == (1<<j)){
                     plus[i] += arr[j + (N-half)];
                 }
             }
-        }
-        for(Integer i: plus){
-            System.out.println(i);
         }
         Arrays.sort(minus,
                 new Comparator<Integer>() {
@@ -61,14 +59,31 @@ public class boj1208 {
                     }
                 });
 
-        Arrays.sort(plus);
+        Arrays.sort(plus,
+                new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer o1, Integer o2) {
+                        return -1 * o1.compareTo(o2);
+                    }
+                });
+
     }
 
     static void solve() throws Exception{
-       for(Integer i: minus){
-           bw.write(i + "\n");
-       } for(Integer i : plus){
-           bw.write(i + "\n");
+        int small_index, large_index;
+        small_index = large_index = 0;
+
+        while(small_index != minus.length && large_index != plus.length){
+            int temp = minus[small_index] + plus[large_index];
+            if(temp == S){
+                ANS++;
+                small_index++;
+            } else if(temp > S){
+                large_index++;
+            } else {
+                small_index++;
+            }
+
         }
    }
 }
