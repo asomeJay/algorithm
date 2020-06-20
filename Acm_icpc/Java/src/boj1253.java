@@ -61,6 +61,10 @@ public class boj1253 {
                 left++;
            } else {
                left++; right++;
+               while(left != arr.length && arr[left] == arr[left-1])
+                   left++;
+               while(right != afterNumber.size() && afterNumber.get(right).equals(afterNumber.get(right-1)))
+                   right++;
 
                hashSet.add(arr[left-1]);
            }
