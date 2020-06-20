@@ -2,31 +2,42 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
 
+class Pair{
+    Integer a, b, add;
+    Pair(int a, int b, int d){
+        this.a = a;
+        this.b = b;
+        this.add = d;
+    }
+}
+
 public class boj1253 {
     static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
-    static HashSet<Integer> hashSet = new HashSet<Integer>();
 
     static int[] arr;
-    static ArrayList<Integer> number;
+    static boolean[] is_visit;
+    static ArrayList<Pair> number;
     static int N, CNT;
 
     public static void main(String[] args) throws  Exception{
         input();
         solve();
-        bw.write(hashSet.size() + "\n");
+        bw.write(CNT + "\n");
         bw.flush();
         bw.close();
     }
 
     static void input() throws Exception{
-       number = new ArrayList<Integer>();
+       number = new ArrayList<Pair>();
 
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
 
         st = new StringTokenizer(br.readLine());
+
+        is_visit = new boolean[N];
         arr = new int[N];
         for(int i = 0; i < N; i++){
             arr[i] = Integer.parseInt(st.nextToken());
@@ -36,37 +47,36 @@ public class boj1253 {
     static void solve() throws Exception{
         for(int i = 0; i < N; i++){
             for(int j = i+1; j < N; j++){
-                if(arr[i] == 0 || arr[j] == 0)
-                    continue;
-                number.add(arr[i] + arr[j]);
+                number.add(new Pair(i,j,arr[i] + arr[j]));
             }
         }
 
-        HashSet<Integer> intermediate = new HashSet<Integer>(number);
-        ArrayList<Integer> afterNumber = new ArrayList<Integer>(intermediate);
-
         Arrays.sort(arr);
-        afterNumber.sort(new Comparator<Integer>() {
+        number.sort(new Comparator<Pair>() {
             @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
+            public int compare(Pair o1, Pair o2) {
+                return o1.add.compareTo(o2.add);
             }
         });
 
         int left = 0, right = 0;
-        while(left != arr.length && right != afterNumber.size()){
-           if(arr[left]> afterNumber.get(right)){
+
+        while(left != arr.length && right != number.size()){
+           if(arr[left]> number.get(right).add){
                 right++;
-           }  else if(arr[left] < afterNumber.get(right)){
+           }  else if(arr[left] < number.get(right).add){
                 left++;
            } else {
-               left++; right++;
-               while(left != arr.length && arr[left] == arr[left-1])
-                   left++;
-               while(right != afterNumber.size() && afterNumber.get(right).equals(afterNumber.get(right-1)))
-                   right++;
-
-               hashSet.add(arr[left-1]);
+               int temp = right;
+               while(temp < number.size() && number.get(temp).add.equals(arr[left])){
+                   if(( number.get(temp).a.equals(left))|| number.get(temp).b.equals(left)){
+                       temp++;
+                       continue;
+                   }
+                   CNT++;
+                   break;
+               }
+               left++;
            }
         }
     }
