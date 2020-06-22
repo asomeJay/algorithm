@@ -29,22 +29,23 @@ public class boj1300 {
     }
 
     public static void solve() throws Exception {
-        int target = 1, sum = 1;
-        while(sum < K){
-           target++;
-           sum += factor(target);
+        int left = 1, right = K;
+        while(left <= right){
+            int mid = (left + right) / 2;
+            int lower_than_mid = lowerThanX(mid);
+            if(lower_than_mid >= K){
+                CNT = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
         }
-        CNT = target;
-
     }
 
-    public static int factor(int n){
-        int cnt = 0, defactor=0;
-        while(defactor <= n){
-            defactor++;
-            if(n / defactor <= N && defactor <= N && n % defactor == 0){
-                cnt++;
-            }
+    public static int lowerThanX(int x){
+        int cnt = 0;
+        for(int i = 1; i <= N; i++){
+            cnt += Math.min(x / i, N);
         }
         return cnt;
     }
