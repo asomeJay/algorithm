@@ -8,7 +8,7 @@ public class boj1450 {
     static StringTokenizer st;
 
     static int N, C, ANS = 1;
-    static int[] array_of_N;
+    static int[] array_of_N, half, rest_half;
 
     public static void main(String[] args)  throws Exception{
         input();
@@ -28,7 +28,27 @@ public class boj1450 {
         for(int i = 0; i < N; i++){
             array_of_N[i] = Integer.parseInt(st.nextToken());
         }
-        Arrays.sort(array_of_N);
+
+        half = new int[1 << (N / 2)];
+        rest_half = new int[1 << (N - N/2)];
+
+        for(int i = 0; i < (1 << (N/2)); i++){
+            for(int j = 0; j < N/2; j++){
+                System.out.print((i  & j) + " ");
+                if((i & j) == 1){
+                    half[i] += array_of_N[j];
+                }
+            }
+        }
+
+        for(int i = 0; i < (1 << (N-N/2)); i++ ){
+            for(int j = N/2; j < N; j++){
+                System.out.print((i & (j - N/2)) + " " );
+                if((i & (j - N/2)) == 1){
+                    rest_half[i] += array_of_N[j];
+                }
+            }
+        }
     }
 
     public static void solve() throws Exception{
