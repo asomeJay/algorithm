@@ -7,7 +7,8 @@ public class boj1561 {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer st;
 
-    static int N, M, ANS;
+    static int N, M;
+    static long ANS;
     static int[] minute_per_device;
     public static void main(String[] args) throws Exception{
         input(); solve();
@@ -28,27 +29,43 @@ public class boj1561 {
     }
 
     static void solve() throws  Exception{
-        long l = 0, r = (long)2000000000 * 30;
-        while(l <= r){
+        if(N <= M){
+            ANS = N;
+            return;
+        }
+
+        long l = 0, r = (long)2000000000 * 30, stand = 0;
+        while(l < r){
             long mid = (l + r ) / 2;
             long cnt = 0;
+
             for(int i = 0; i < M; i++){
-                cnt += (mid / minute_per_device[i]);
+                cnt += (mid / minute_per_device[i] + 1);
             }
+
             if(cnt < N){
                 l = mid + 1;
             }  else {
-                r = mid - 1;
+                r = mid;
             }
         }
         long cnt = 0;
-        for(int i = 0; i < M; i++){
-            cnt += (l / minute_per_device[i]);
-            if(cnt >= N){
-                ANS = i;
+        int i = 0;
+        r--;
+
+
+        for(i = 0; i < M; i++){
+            cnt += (r / minute_per_device[i] + 1);
+        }
+        i = 0; r++;
+        while(true){
+            if(r % minute_per_device[i] == 0)
+                cnt++;
+            if(cnt >= N && (r % minute_per_device[i] == 0)){
                 break;
             }
+            i++;
         }
-
+        ANS = i+1;
     }
 }
