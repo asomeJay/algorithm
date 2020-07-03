@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <queue>
 
 #define INF 2100000000
 #define VISIT 1
@@ -28,30 +29,32 @@ int main(void) {
 		} 
 	}
 	
-	for (int i = 1; i <= N; i++) {
+	for (int i = 1; i <= P; i++) {
 		int a, b, c;
 		cin >> a >> b >> c;
 		edge[a][b] = c;
 		edge[b][a] = c;
 	}
-
-	int l = 0, r = 1000000000;
+	int l = 0, r = 1e7, ans = -1;
 
 	while (l < r) {
 		int mid = (l + r) / 2;
-		for (int i = 1; i <= N; i++) 
+		for (int i = 1; i <= N; i++) {
+			is_visit[i] = false;
+			weight[i] = 0;
 			dist[i] = INF;	
+		}
 
 		bool stand = dijkstra(mid);
 		if (stand) { 
-			l++;
+			r = mid;
 		}
 		else {
-			r--;
+			l = mid + 1;
 		}
 	}
 
-	cout << l << endl;
+	cout << r << endl;
 	return 0;
 }
 
@@ -70,28 +73,25 @@ int getSmallest() {
 }
 
 bool dijkstra(int limit) {
-	for (int i = 1; i <= N; i++) {
-		dist[i] = edge[1][i];
-	}
-	is_visit[1] = true;
-	
-	for (int i = 0; i < N - 2; i++) {
+		
+	dist[1] = 0;
+	for (int i = 0; i < N; i++) {
 		int current = getSmallest();
+		if (current == -1) break;
 		is_visit[current] = true;
-		for (int j = 1; j <= N; i++) {
-			if (dist[current] + edge[current][j] < dist[j]) {
-				dist[j] = dist[current] + edge[current][j];
-				weight[j] = dist[j] - dist[current];
+		for (int j = 1; j <= N; j++) {
+			if (edge[current][j] < dist[j] && !is_visit[j] ){
+						//cout << "current : " << current << " edge : " << j << endl;
+				dist[j] = edge[current][j];
+				if (weight[j] == 0 || weight[j] > weight[current] + (edge[current][j] >= limit))
+					weight[j] = weight[current] + (edge[current][j] > limit);
 			}
 		}
 	}
-
-	int cnt = 0;
-	for (int i = 1; i <= N; i++) {
-		if (weight[i] >= limit)
-			cnt++;
-	}
-
-	cout << "Cnt : " << cnt << endl;
-	return (cnt <= K);
+	/*cout << limit << endl;
+	for (int i = 0; i <= N; i++) {
+		cout << weight[i] << " ";
+	} cout << endl;*/
+	
+	return (weight[N] <= K);
 }
