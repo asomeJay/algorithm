@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 
 int N;
-vector<int> node_for_sort;
-vector<int> node_for_seq;
+vector<int> node;
+
+priority_queue<int, vector<int>, greater<int>> min_heap;
+priority_queue<int, vector<int> ,less<int>> max_heap;
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -16,17 +19,23 @@ int main(void) {
 	for (int i = 0; i < N; i++) {
 		int a;
 		cin >> a;
+	
+		node.push_back(a);
 
-		node_for_sort.push_back(a);
-		node_for_seq.push_back(a);
+		if (min_heap.size() == max_heap.size()) {
+			max_heap.push(a);	
+		}
+		else {
+			min_heap.push(a);
+		}
 
-		if (i % 2 == 0) {
-			sort(node_for_sort.begin(), node_for_sort.end());
-			cout << node_for_sort[node_for_sort.size() / 2] << '\n';
+		if (!max_heap.empty() && !min_heap.empty() && max_heap.top() > min_heap.top()) {
+			int a = max_heap.top(); max_heap.pop();
+			int b = min_heap.top(); min_heap.pop();
+
+			min_heap.push(a); max_heap.push(b);
 		}
-		else {	
-			cout << min(node_for_seq[i / 2], node_for_seq[i/ 2 + 1]) << '\n';
-		}
+		cout << max_heap.top() << '\n';
 	}
 	return 0;
 }
