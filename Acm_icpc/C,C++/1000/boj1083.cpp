@@ -6,42 +6,32 @@ using namespace std;
 
 int N, S;
 
-int main(void) {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
+int main(void) {	
+	while (~scanf("%d", &N)) {
+		vector<int> A;
+		A.resize(N);
 
-	vector<int> A;
-	cin >> N; A.resize(N);
+		for (int i = 0; i < N; i++) scanf("%d", &A[i]);
+		scanf("%d", &S);
 
-	for (int i = 0; i < N; i++) 
-		cin >> A[i];
-	
-	cin >> S;
-
-	// N<=50 ÀÚ¿¬¼ö
-	int cur = 0;
-	while (cur < N && S) {
-		if (A[cur] < A[cur + 1]) {
-			swap(A[cur], A[cur + 1]);
-			S--;
-			int temp_cur = cur;
-			while (temp_cur >= 1 && S) {
-				if (A[temp_cur - 1] < A[temp_cur]) {
-					swap(A[temp_cur], A[temp_cur - 1]);
-					temp_cur--;
-					S--;
-				}
-				else {
-					break;
+		for (int i = 0; i < N && S; i++) {
+			int maxi = A[i], max_idx = i;
+			
+			for (int j = i + 1; j < N && j <= i + S; j++) {
+				if (maxi < A[j]) {
+					maxi = A[j];
+					max_idx = j;
 				}
 			}
+
+			S -= (max_idx - i);
+			while (max_idx > i) A[max_idx] = A[max_idx - 1], max_idx--;
+			A[i] = maxi;
 		}
-
-		cur++;
-	}
-
-	for (auto i : A) {
-		cout << i << " ";
+		for (auto i : A) {
+			printf("%d ", i);
+		}
+		putchar('\n');
 	}
 	return 0;
 }
