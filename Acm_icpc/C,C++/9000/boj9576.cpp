@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cstring>
 
 #define MAX_PARENT 1001
 #define p pair<int,int>
@@ -11,7 +12,7 @@ using namespace std;
 
 int N, M, t_case, cnt;
 vector<p> user;
-vector<bool> book;
+bool book[MAX_PARENT];
 
 void solve();
 
@@ -23,15 +24,13 @@ inline bool comp(p a, p b) {
 }
 
 int main(void) {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
-
 	cin >> t_case;
 
 	for (int ii = 0; ii < t_case; ii++){
 		cnt = 0;
 		cin >> N >> M;
-		book.resize(MAX_PARENT, false);
+		user.clear();
+		memset(book, false, sizeof(book));
 
 		for (int i = 0; i < M; i++) {
 			int a, b;
@@ -52,8 +51,8 @@ int main(void) {
 }
 
 void solve() {
-	for (auto i : user) {
-		for (int j = i.first; j <= i.second; j++) {
+	for (int i = 0; i < M; i++) {
+		for (int j = user[i].first; j <= user[i].second; j++) {
 			if (!book[j]) {
 				book[j] = true;
 				cnt++;
