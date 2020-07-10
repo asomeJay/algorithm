@@ -1,4 +1,4 @@
-/* 11375 열혈강호 */
+/* 열혈 강호 다시 풀기 */
 
 #include <iostream>
 #include <vector>
@@ -8,12 +8,11 @@
 
 using namespace std;
 
-int N, M, cnt, person[MAX], work[MAX];
+int N, M, person[MAX], work[MAX], cnt;
 vector<int> adj[MAX];
+bool is_visit[MAX];
 
-bool visited[MAX];
-
-void solve();
+bool dfs(int x);
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -21,36 +20,32 @@ int main(void) {
 
 	cin >> N >> M;
 	for (int i = 1; i <= N; i++) {
-		int nn; cin >> nn;
-		for (int j = 0; j < nn; j++) {
+		int a; cin >> a;
+		for (int ii = 0; ii < a; ii++) {
 			int temp; cin >> temp;
 			adj[i].push_back(temp);
 		}
 	}
-	
-	solve();
-	cout << cnt << '\n';
 
+	for (int i = 1; i <= N; i++) {
+		fill(is_visit, is_visit + MAX, false);
+		if (dfs(i)) cnt++;
+	}
+
+	cout << cnt << '\n';
 	return 0;
 }
 
 bool dfs(int x) {
-	for (int b : adj[x]) {
-		if (visited[b]) continue;
-		visited[b] = true;
-		if (work[b] == 0 || dfs(work[b])) {
-			person[x] = b;
-			work[b] = x;
+	for (auto i : adj[x]) {
+		if (is_visit[i]) continue;
+		is_visit[i] = true;
+
+		if (work[i] == 0 || dfs(work[i])) {
+			person[x] = i;
+			work[i] = x;
 			return true;
 		}
 	}
 	return false;
 }
-
-void solve() {
-	for (int i = 1; i <= N; i++) {
-		fill(visited, visited + MAX, false);
-		if (dfs(i)) cnt++;
-	}
-}
-
