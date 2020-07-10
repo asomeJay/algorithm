@@ -5,14 +5,22 @@
 #include <algorithm>
 
 #define MAX_PARENT 1001
+#define p pair<int,int>
 
 using namespace std;
 
 int N, M, t_case, cnt;
-int parent[MAX_PARENT];
+vector<p> user;
+vector<bool> book;
 
-int find_parent(int x);
-void union_parent(int left, int);
+void solve();
+
+inline bool comp(p a, p b) {
+	if (a.second != b.second)
+		return a.second < b.second;
+	else
+		return a.first < b.first;
+}
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -22,33 +30,35 @@ int main(void) {
 
 	for (int ii = 0; ii < t_case; ii++){
 		cnt = 0;
-		for (int i = 0; i < MAX_PARENT; i++) {
-			parent[i] = i;
-		}
-
 		cin >> N >> M;
+		book.resize(MAX_PARENT, false);
+
 		for (int i = 0; i < M; i++) {
 			int a, b;
 			cin >> a >> b;
-			union_parent(a, b);
+			user.push_back({ a,b });
+			
 		}
+		sort(user.begin(), user.end(), comp);
+		
+		solve();
+	/*	for (auto i : user) {
+			cout << i.first << " " << i.second << '\n';
+		}*/
+		
 		cout << cnt << '\n';
 	}
 	return 0;
 }
 
-int find_parent(int x) {
-	if (parent[x] == x) return x;
-	return parent[x] = find_parent(parent[x]);
-}
-
-void union_parent(int left, int right) {
-	int x_parent = find_parent(right);
-	
-	if (x_parent >= left && x_parent <= N) {
-		cnt++;
+void solve() {
+	for (auto i : user) {
+		for (int j = i.first; j <= i.second; j++) {
+			if (!book[j]) {
+				book[j] = true;
+				cnt++;
+				break;
+			}
+		}
 	}
-	if (x_parent != 0) 
-		parent[x_parent] = find_parent(x_parent - 1);
-	return;
 }
