@@ -4,15 +4,15 @@
 #include <vector>
 #include <algorithm>
 
-#define MAX_PARENT 1000
+#define MAX_PARENT 1001
 
 using namespace std;
 
-int N, M, t_case;
+int N, M, t_case, cnt;
 int parent[MAX_PARENT];
 
 int find_parent(int x);
-int union_parent(int x, int y);
+void union_parent(int left, int);
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -21,27 +21,34 @@ int main(void) {
 	cin >> t_case;
 
 	for (int ii = 0; ii < t_case; ii++){
+		cnt = 0;
+		for (int i = 0; i < MAX_PARENT; i++) {
+			parent[i] = i;
+		}
+
 		cin >> N >> M;
 		for (int i = 0; i < M; i++) {
 			int a, b;
 			cin >> a >> b;
+			union_parent(a, b);
 		}
+		cout << cnt << '\n';
 	}
-
-
 	return 0;
 }
 
 int find_parent(int x) {
-	if (parent[x] == -1) return x;
+	if (parent[x] == x) return x;
 	return parent[x] = find_parent(parent[x]);
 }
 
-int union_parent(int x, int y) {
-	int x_parent = find_parent(x);
-	int y_parent = find_parent(y);
-
-	if (x == y) return 0;
-
-
+void union_parent(int left, int right) {
+	int x_parent = find_parent(right);
+	
+	if (x_parent >= left && x_parent <= N) {
+		cnt++;
+	}
+	if (x_parent != 0) 
+		parent[x_parent] = find_parent(x_parent - 1);
+	return;
 }

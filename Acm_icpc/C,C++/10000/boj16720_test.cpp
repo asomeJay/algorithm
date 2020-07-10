@@ -15,14 +15,13 @@ void input();
 void solve();
 
 int main(void) {
-	
 	input();
 	solve();
 
 	return 0;
 }
 
-// 2N 은 무조건 움직여야한다. 
+// 2N 은 무조건 움직여야한다.
 
 void input() {
 	cin >> N;
