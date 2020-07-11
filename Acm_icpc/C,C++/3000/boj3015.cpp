@@ -3,29 +3,46 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <stack>
+
+#define ll pair<long long int, long long int>
 
 using namespace std;
-int N;
-vector<int> people;
+long long N, ANS;
+stack<ll> people;
 
-void solve();
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL); cout.tie(NULL);
 
-	cin >> N; people.resize(N);
+	cin >> N;
+
 	for (int i = 0; i < N; i++) {
-		cin >> people[i];
+		int a; cin >> a;
+		ll h = { a, 1 };
+
+		while (!people.empty() && people.top().first <= h.first) {
+			
+			ANS += people.top().second;
+			if (people.top().first == h.first) {
+				h.second = people.top().second + 1;
+			}
+			else {
+				h.second = 1;
+			}
+		
+			people.pop();
+		}
+
+		if (!people.empty()) {
+		//	cout << people.top().first << " " << h.first << endl;
+			ANS++;
+		}
+
+		people.push(h);
 	}
 
-	solve();
+	cout << ANS << '\n';
 	return 0;
-}
-
-
-void solve() {
-	// 이분탐색해서 제일 큰거 
-	// 왼쪽 제일 큰거, 오른쪽 제일큰거 index 차이
-
 }
