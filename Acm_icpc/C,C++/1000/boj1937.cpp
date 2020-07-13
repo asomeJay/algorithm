@@ -1,57 +1,57 @@
-/* Four Squares */
+/* 판다 */
 
 #include <iostream>
 #include <vector>
 #include <algorithm>
 
+#define MAX 500 + 1
+
 using namespace std;
 
-const int limit = 224;
-int dp[226];
+int forest[MAX][MAX], dr[4] = { -1,0,1,0 }, dc[4] = { 0,1,0,-1 };
+int dp[MAX][MAX];
+int N, ANS;
+
+int dfs(int r, int c);
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-
-	int N, mini = 9876654321;
+	cin.tie(NULL); cout.tie(NULL);
+	
 	cin >> N;
+	for (int i = 0; i < N; i++) 
+		for (int j = 0; j < N; (cin >> forest[i][j++]));	
 
-	for (int i = 1; i < limit; i++) {
-		dp[i] = i * i;
-		if (dp[i] > N) break;
-		if (dp[i] == N) {
-			cout << 1;
-			return 0;
+	int maxi = -1;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			maxi = max(maxi, dfs(i, j));
 		}
 	}
-
-	for (int i = 1; i < limit; i++) {
-		for (int j = i; j < limit; j++) {
-			if (dp[i] + dp[j] > N) 
-				break;
-			if (dp[i] + dp[j] == N) {
-				mini = min(mini, 2);
-			}
-			for (int k = j; k < limit; k++) {
-				if (dp[i] + dp[j] + dp[k] > N) 
-					break;
-
-				if (dp[i] + dp[j] + dp[k] == N) {
-					mini = min(mini, 3);
-				}
-
-				for (int m = k; m < limit; m++) {
-					if (dp[i] + dp[j] + dp[k] + dp[m] > N)
-						break;
-					if (dp[i] + dp[j] + dp[k] + dp[m] == N) {
-						mini = min(mini, 4);
-					}
-				}
-			}
-		}
-	}
-
-	cout << mini;
-
+	cout << maxi;
 	return 0;
+
+}
+
+bool is_range(int r, int c) {
+	return r >= 0 && r < N&& c >= 0 && c < N;
+}
+
+// 이제 dfs를 할 것이다.
+int dfs(int r, int c){
+	int& ret = dp[r][c];
+	if (ret != 0)
+		return ret;
+
+	ret = 1;
+	for (int i = 0; i < 4; i++) {
+		int nr = r + dr[i];
+		int nc = c + dc[i];
+		
+		if (is_range(nr, nc) == true && forest[r][c] < forest[nr][nc]) {
+			ret = max(ret, dfs(nr, nc) + 1);
+		}
+	}
+
+	return ret;
 }
