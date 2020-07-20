@@ -3,22 +3,25 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <stack>
+#include <queue>
+
+#define pp pair<int,int>
+#define MAX 1500+1
 
 using namespace std;
 
 int R, C;
-int up, down, l, r;
 int dr[4] = { -1,0,1,0 };
 int dc[4] = { 0,1,0,-1 };
 
-char map[1500 + 1][1500 + 1];
-bool is_visit[1500 + 1][1500 + 1];
-vector<pair<int, int>> swan_position[2];
+queue<pp> waterQ;
+vector<pp> swanV;
+char map[MAX][MAX];
+bool is_visit[MAX][MAX];
 
 void input();
+bool is_range(int, int);
 void solve();
-void dfs();
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -32,75 +35,84 @@ int main(void) {
 
 void input() {
 	cin >> R >> C;
-	int k = 0;
 	for (int i = 1; i <= R; i++) {
 		for (int j = 1; j <= C; j++) {
 			cin >> map[i][j];
 			if (map[i][j] == 'L') {
-				swan_position[k++].push_back({ i,j });
+				swanV.push_back({ i,j });
+			}
+			if (map[i][j] == 'L' || (map[i][j] == '.')) {
+				waterQ.push({ i,j });
 			}
 		}
 	}
 }
 
 bool is_range(int dr, int dc) {
-	return dr >= up && dr <= down && dc >= l && dc <= r;
-}
-
-int dist(pair<int, int> a, pair<int, int> b) {
-	return abs(b.first - a.first) + abs(b.second - a.second);
-}
-void dfs(int idx, int r, int c) {
-	stack<pair<int, int>> s;
-	s.push({ r,c });
-
-	while (!s.empty()) {
-		int cr = s.top().first;
-		int cc = s.top().second;
-		s.pop();
-		for (int i = 0; i < 4; i++) {
-			int nr = cr + dr[i];
-			int nc = cc + dc[i];
-		
-			if (is_range(nr, nc) == true && map[nr][nc] == '.' && is_visit[nr][nc] == false) {
-				is_visit[nr][nc] = true;
-				s.push({ nr, nc });
-				swan_position[idx].push_back({ nr,nc });
-			}
-		}
-	}
-	up = swan_position[0][0].first;
-	down = swan_position[1][0].first;
-	l = min(swan_position[0][0].second, swan_position[1][0].second);
-	r = max(swan_position[0][0].second, swan_position[1][0].second);
-	
+	return dr >= 1 && dr <= R && dc >= 1&&  dc <= C;
 }
 
 void solve() {
-	dfs(0, swan_position[0][0].first, swan_position[0][0].second);
+	queue<pp> q;
+	q.push(swanV[0]);	// 
+	is_visit[swanV[0].first][swanV[0].second] = true; // 방문 체크
 
-	stack<pair<int, int>> s;
-	s.push({ swan_position[1][0].first, swan_position[1][0].second });
-	
-	int sum = dist(swan_position[0][0], swan_position[1][0]);
 
-	while (!s.empty()) {
-		int cr = s.top().first;
-		int cc = s.top().second;
-		s.pop();
+	int day = 0;
+	while (true) {
 
-		for (int i = 0; i < 4; i++) {
-			int nr = cr + dr[i];
-			int nc = cc + dc[i];
+		bool chk = false;
+		queue<pp> nextQ;
 
-			if (is_range(nr, nc) == true && map[nr][nc] == '.' && is_visit[nr][nc] == false) {
-				is_visit[nr][nc] = true;
-				s.push({ nr, nc });
-				for (int j = 0; j < swan_position[0].size(); j++) {
-					sum = min(sum, dist(swan_position[0][j], { nr, nc }));
+		while (!q.empty()) { // 현재 백조가 이동할 수 있는 공간을 체크한다.
+			int rr = q.front().first;
+			int cc = q.front().second;
+			q.pop();
+
+			if (rr == swanV[1].first && cc == swanV[1].second) {
+				chk = true;
+				break;
+			}
+
+			for (int d = 0; d < 4; d++) {
+				int nr = rr + dr[d];
+				int nc = cc + dc[d];
+
+				if (is_range(nr, nc) == true && is_visit[nr][nc] == false) {
+					is_visit[nr][nc] = true;
+
+					if (map[nr][nc] == 'X')  // 빙판은 내일 녹는다.
+						nextQ.push({ nr,nc });
+
+					else					// 지금 물인 곳을 백조가 헤엄쳐다닌다. 
+						q.push({ nr, nc });
 				}
 			}
 		}
+
+		if (chk)
+			break;
+
+		q = nextQ;
+
+		int water_size = waterQ.size(); // 한 번에 끝까지 돌리는 게 아니라 지금 큐에 있는것만 점검한다.
+		while (water_size--) {
+			int rr = waterQ.front().first;
+			int cc = waterQ.front().second;
+			waterQ.pop();
+
+			for (int i = 0; i < 4; i++) {
+				int nr = rr + dr[i];
+				int nc = cc + dc[i];
+
+				if (is_range(nr, nc) == true && map[nr][nc] == 'X') {
+					map[nr][nc] = '.';
+					waterQ.push({ nr,nc });
+				}
+			}
+		}
+		day++;
 	}
-	cout << sum / 2<< '\n';
+
+	cout << day << '\n';
 }
