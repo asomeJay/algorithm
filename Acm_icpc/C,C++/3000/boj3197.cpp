@@ -75,13 +75,13 @@ void solve() {
 			}
 
 			for (int d = 0; d < 4; d++) {
-				int nr = rr + dr[d];
+				int nr = rr + dr[d]; // 사방을 확인한다. 
 				int nc = cc + dc[d];
 
 				if (is_range(nr, nc) == true && is_visit[nr][nc] == false) {
 					is_visit[nr][nc] = true;
 
-					if (map[nr][nc] == 'X')  // 빙판은 내일 녹는다.
+					if (map[nr][nc] == 'X')  // 백조의 인접 빙판은 내일 녹는다.
 						nextQ.push({ nr,nc });
 
 					else					// 지금 물인 곳을 백조가 헤엄쳐다닌다. 
@@ -111,7 +111,7 @@ void solve() {
 				}
 			}
 		}
-		day++;
+		day++;	// 하루 증가
 	}
 
 	cout << day << '\n';
