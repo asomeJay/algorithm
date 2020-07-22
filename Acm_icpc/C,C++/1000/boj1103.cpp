@@ -12,6 +12,7 @@ void solve();
 int N, M, ANS;
 int dr[4] = { -1,0,1,0 };
 int dc[4] = { 0,1,0,-1 };
+
 char board[50][50];
 int dp[50][50];
 bool is_visit[50][50];
@@ -37,7 +38,7 @@ void input() {
 	}
 }
 
-bool is_range(int r, int c) {
+inline bool is_range(int r, int c) {
 	return r >= 0 && r < N&& c >= 0 && c < M;
 }
 
@@ -68,8 +69,5 @@ int dfs(int r, int c) {
 }
 
 void solve() {
-	ANS = dfs(0, 0);
-	if (ANS == 0)
-		ANS = -1;
-	cout << ANS << '\n';
+	cout << dfs(0, 0) << '\n';
 }
