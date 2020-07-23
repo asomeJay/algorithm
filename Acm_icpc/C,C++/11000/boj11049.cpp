@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #define MAX 500 + 1
+#define IMAX 2100000000 // IMAX 보고싶다
 
 using namespace std;
 
@@ -12,8 +13,8 @@ void input();
 void solve();
 
 long long int N, ANS;
-bool is_visit[MAX];
 pair<int, int> matrix[MAX];
+int dp[MAX][MAX];
 
 int main(void) {
 	ios_base::sync_with_stdio(false);
@@ -35,35 +36,19 @@ void input() {
 	}
 }
 
-void solve() {
-	int size_of_N = N;
-	while (--size_of_N) {
-		int before = 0, after = 0, sum = 2000000000;
-		int temp_sum = 0, temp_before = 0;
+int recur(int x, int y) {
+	if (x == y) return 0;
 
-		for (int i = 0; i < N; i++) {
-			if (is_visit[i] == false) {
-				temp_before = i;
-				break;
-			}
-		}
-		
-		for (int i = temp_before + 1; i < N; i++) {	
-			if (is_visit[i] == false) {
-				temp_sum = matrix[temp_before].first * matrix[temp_before].second * matrix[i].second;
-				if (sum > temp_sum) {
-					before = temp_before;
-					after = i;
-					sum = temp_sum;
-				}
-				temp_before = i;
-			}
-		}
-		matrix[before].second = matrix[after].second;
-		is_visit[after] = true;
-		ANS += sum;
-		
+	int& ret = dp[x][y];
+	if (ret != 0) return ret;
+
+	ret = INT_MAX;
+	for (int i = x; i < y; i++) {
+		ret = min(ret, recur(x, i) + recur(i + 1, y) + matrix[x].first * matrix[i].second * matrix[y].second);
 	}
+	return ret;
+}
 
-	cout << ANS << '\n';
+void solve() {
+	cout << recur(0, N - 1) << '\n';
 }
