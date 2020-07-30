@@ -3,7 +3,6 @@
 #include <iostream>
 #include <algorithm>
 #include <queue>
-#include <cstring>
 #include <cmath>
 
 #define MAX 1024 + 1
