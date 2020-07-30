@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 
+#define INT_MAX 2100000000
 #define MAX 500 + 1
 #define IMAX 2100000000 // IMAX 보고싶다
 
