@@ -100,11 +100,7 @@ void solve() {
 
 	dfs();
 	
-	for (int i = 1; i <= M; i++) {
-		Ans = min(Ans, dist[N][i]);
-	}
-	if (Ans== MAX_N)
-		cout << "Poor KCM" << '\n';
-	else 
-		cout << Ans << '\n';
+	for (int i = 1; i <= M; i++) Ans = min(Ans, dist[N][i]);
+	if (Ans== MAX_N)  cout << "Poor KCM" << '\n';
+	else  cout << Ans << '\n';
 }
