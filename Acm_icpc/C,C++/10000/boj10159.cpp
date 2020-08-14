@@ -10,8 +10,8 @@ using namespace std;
 void input();
 void solve();
 	
-int N, M, dp[100 + 1];
-vector<int> edge[100 + 1];
+int N, M;
+bool edge[100 + 1][100 + 1];
 
 
 int main(void) {
@@ -28,39 +28,26 @@ void input() {
 	cin >> N >> M;
 	for (int i = 0; i < M; i++) {
 		int a, b; cin >> a >> b;
-		edge[a].push_back(b);
-	}
-}
-
-void bfs(int idx) {
-	queue<int> q;
-	q.push(idx);
-
-	bool is_visit[100 + 1] = { false, };
-	is_visit[idx] = true;
-	dp[idx] ++;
-
-	while (!q.empty()) {
-		int curr = q.front();
-		q.pop();
-
-		for (auto i : edge[curr]) {
-			if (is_visit[i] == false) {
-				is_visit[i] = true;
-				q.push(i);
-				dp[idx]++;
-				dp[i]++;
-			}
-		}
+		edge[a][b] = true;
 	}
 }
 
 void solve() {
 	for (int i = 1; i <= N; i++) {
-		bfs(i);
+		for (int j = 1; j <= N; j++) {
+			for (int k = 1; k <= N; k++) {
+				if (edge[j][i] == true && edge[i][k] == true) {
+					edge[j][k] = true;
+				}
+			}
+		}
 	}
-
+	
 	for (int i = 1; i <= N; i++) {
-		cout << N - dp[i] << "\n";
+		int cnt = 0;
+		for (int j = 1; j <= N; j++) {
+			if (!edge[i][j] && !edge[j][i]) cnt++;
+		} 
+		cout << cnt - 1 << '\n';
 	}
 }
