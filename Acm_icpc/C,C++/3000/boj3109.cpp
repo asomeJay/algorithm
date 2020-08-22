@@ -2,19 +2,17 @@
 
 #include <iostream>
 
-#define WALL 'X'
+#define WALL 'x'
 #define EMPTY '.'
 #define MAXR 10010
 #define MAXC 510
 
 using namespace std;
 
-int R, C;
+int R, C, Ans;
 int dr[3] = { -1, 0, 1 };
 
 char map[MAXR][MAXC];
-bool dp[MAXR][MAXC];
-bool is_used[MAXR][MAXC];
 
 void input();
 void solve();
@@ -43,42 +41,23 @@ inline bool is_range(int r, int c) {
 	return r >= 0 && r < R&& c >= 0 && c < C;
 }
 
+bool b_t(int r, int c) {
+	if (is_range(r, c) == false) return false;
+	if (map[r][c] == WALL) return false;
+	map[r][c] = WALL;
+
+	if (c == C - 1) return true;
+
+	if (b_t(r - 1, c + 1) == true) return true;
+	if (b_t(r, c + 1) == true) return true;
+	if (b_t(r + 1, c + 1) == true) return true;
+	return false;
+}
+
 void solve() {
-	/* 제일 오른쪽 열부터 왼쪽으로 열을 하나씩 이동하면서 */
-	/* 도착점에 도달할 수 있는 칸을 찾는다. */
 	for (int i = 0; i < R; i++) {
-		dp[i][C - 1] = true;
+		if (b_t(i, 0) == true) Ans++;
 	}
-
-	for (int c = C - 2; c >= 0; c--) {
-		for (int r = 0; r < R; r++) {
-			for (int k = 0; k < 3; k++) {
-				int nr = r + dr[k];
-				int nc = c + 1;
-
-				if (is_range(nr, nc) == true && dp[nr][nc] == true 
-					&& is_used[nr][nc] == false && map[r][c] == '.') {
-					is_used[nr][nc] = true;
-					dp[r][c] = true;
-					break;
-				}
-			}
-		}
-	}
-/*
-	for (int i = 0; i < R; i++) {
-		for (int j = 0; j < C; j++) {
-			cout << dp[i][j] << " ";
-		}
-		cout << endl;
-	}*/
-
-	int summation = 0;
-	for (int i = 0; i < R; i++) {
-		if (dp[i][0] == true) {
-			summation++;
-		}
-	}
-	cout << summation << '\n';
+	cout << Ans << '\n';
 	return;
 }
