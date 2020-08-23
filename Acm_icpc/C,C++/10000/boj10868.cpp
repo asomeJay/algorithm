@@ -32,7 +32,7 @@ int seg_init(int s, int e, int node) {
 }
 
 int seg_find(int s, int e, int l, int r, int node) {
-	if (e < l || r < s) return 2100000000;
+	if (e < l || r < s) return 2100000000; // 각 노드의 최댓값이 10억임
 	if (l <= s && e <= r) return tree[node];
 	return min(seg_find(s, (s + e) / 2, l, r, node * 2), seg_find((s + e) / 2 + 1, e, l, r, node * 2 + 1));
 }
