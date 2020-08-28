@@ -11,7 +11,7 @@
 using namespace std;
 
 string a, b;
-int Ans, check[INTMAX];
+int check[INTMAX];
 bool decimal[INTMAX];
 
 void input();
@@ -24,6 +24,8 @@ int main(void) {
 	int ttt; cin >> ttt;
 
 	for (int t_case = 0; t_case < ttt; t_case++) {
+		memset(check, -1, sizeof(check));
+		memset(decimal, true, sizeof(decimal));
 		input();
 		solve();
 	}
@@ -35,17 +37,7 @@ void input() {
 	cin >> a >> b;
 }
 
-void dfs(int depth, string l, string r) {
-	if (l == r) {
-		Ans = max(Ans, depth);
-		return;
-	}
-		
-}
-
 void eratos() {
-	memset(decimal, true, sizeof(decimal));
-
 	decimal[1] = decimal[0] = false;
 
 	for (int i = 2; i < INTMAX; i++) {
@@ -59,8 +51,6 @@ void eratos() {
 }
 
 void solve() {
-	memset(check, -1, sizeof(check));
-
 	check[(int)stoi(a)] = 0;
 
 	int depth = 0;
