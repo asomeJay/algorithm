@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <stack>
 
 #define ll long long int
 #define pp pair<ll,ll>
@@ -34,14 +35,12 @@ void input() {
 	cin >> N >> M;
 	for (int i = 0; i < M; i++) {
 		ll a, b; cin >> a >> b;
-		if (a > b) 
-			b += N;
-		
-		bus.push_back(make_pair(i, make_pair(a, b)));
-	}
-
-	for (int i = 0; i < M; i++) {
-		bus.push_back(make_pair(i, make_pair(N + bus[i].second.first, N + bus[i].second.second)));
+		if (a > b) {
+			bus.push_back(make_pair(i, make_pair(a - N, b)));
+			bus.push_back(make_pair(i, make_pair(a, b + N)));
+		}
+		else 
+			bus.push_back(make_pair(i, make_pair(a, b)));
 	}
 }
 
@@ -53,28 +52,29 @@ void solve() {
 	/* first point가 크더라도 second point가 같으면 포함됨 */
 	/* second point가 크면 무조건 포함 안됨 */
 	
-	pair<int, pp> curr = bus[0];
+	stack<pair<int, pp>> s;
+	s.push(bus[0]);
+
 	for (int i = 1; i < bus.size(); i++) {
-		
 		// 두 버스라인의 도착점이 같음
-		if (curr.second.second == bus[i].second.second) {
+		if (s.top().second.second == bus[i].second.second) {
 			is_visit[bus[i].first] = true;
 		}
 		// 버스라인의 도착점이 현재 도착점보다 뒤임.
 		else {
 			// 새로운 버스라인의 시작점이 현재 시작점보다 더 앞이면
 			// 현재 라인은 포함됨. 
-			if (curr.second.first >= bus[i].second.first) {
-				is_visit[curr.first] = true;
+			while (!s.empty() && s.top().second.first >= bus[i].second.first) {
+				is_visit[s.top().first] = true;
+				s.pop();
 			}
-
-			curr = bus[i];
+			s.push(bus[i]);
 		}
 	}
 	
 	for (int i = 0; i < M; i++) {
-		if (is_visit[bus[i].first] == false) {
-			cout << bus[i].first + 1 << " ";
+		if (is_visit[i] == false) {
+			cout <<i  + 1 << " ";
 		}
 	}
 }
