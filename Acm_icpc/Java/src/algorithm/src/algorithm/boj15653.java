@@ -75,6 +75,7 @@ public class boj15653 {
         }
 
         public int tilting(Marble m, Marble b, int count) {
+
             if (isHole(b)) {
                 // blue to hole
                 return -1;
@@ -83,86 +84,81 @@ public class boj15653 {
                 return count;
             }
 
-            System.out.println(m.toString() + " " + b.toString() + " count = " + count);
 
             int newCount = Integer.MAX_VALUE;
             // Up
             Marble newm = new Marble(m);
             Marble newb = new Marble(b);
-            boolean flag = false;
+            boolean flag;
+
             if (newm.r > newb.r) {
-                flag |= tiltUp(newm, newb);
-                flag |= tiltUp(newb, newm);
+                flag = tiltUp(newm, newb) | tiltUp(newb, newm);
             } else {
-                flag |= tiltUp(newb, newm);
-                flag |= tiltUp(newm, newb);
+                flag = tiltUp(newb, newm) | tiltUp(newm, newb);
             }
+            System.out.println("up" + m.toString() + " " + b.toString() + " count = " + count);
 
             if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
                 visited[newm.r][newm.c][newb.r][newb.c] = true;
                 int result = tilting(newm, newb, count + 1);
-                if(result != -1)
+                if (result != -1)
                     newCount = Math.min(newCount, result);
             }
 
             // Down
             newm = new Marble(m);
             newb = new Marble(b);
-            flag = false;
+
             if (newm.r > newb.r) {
-                flag |= tiltDown(newm, newb);
-                flag |= tiltDown(newb, newm);
+                flag = tiltDown(newm, newb) | tiltDown(newb, newm);
             } else {
-                flag |= tiltDown(newb, newm);
-                flag |= tiltDown(newm, newb);
+                flag = tiltDown(newb, newm) | tiltDown(newm, newb);
             }
+            System.out.println("down" + m.toString() + " " + b.toString() + " count = " + count);
+
             if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
                 visited[newm.r][newm.c][newb.r][newb.c] = true;
                 int result = tilting(newm, newb, count + 1);
-                if(result != -1)
+                if (result != -1)
                     newCount = Math.min(newCount, result);
             }
             // Left
             newm = new Marble(m);
             newb = new Marble(b);
-            flag = false;
+
             if (newm.c > newb.c) {
-                flag |= tiltLeft(newb, newm);
-                flag |= tiltLeft(newm, newb);
+                flag = tiltLeft(newb, newm) | tiltLeft(newm, newb);
             } else {
-                flag |= tiltLeft(newm, newb);
-                flag |= tiltLeft(newb, newm);
+                flag = tiltLeft(newm, newb) | tiltLeft(newb, newm);
             }
+            System.out.println("left" + m.toString() + " " + b.toString() + " count = " + count);
 
             if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
                 visited[newm.r][newm.c][newb.r][newb.c] = true;
                 int result = tilting(newm, newb, count + 1);
-                if(result != -1)
+                if (result != -1)
                     newCount = Math.min(newCount, result);
             }
             // Right
             newm = new Marble(m);
             newb = new Marble(b);
-            flag = false;
+
             if (newm.c > newb.c) {
-                flag |= tiltRight(newm, newb);
-                flag |= tiltRight(newb, newm);
+                flag = tiltRight(newm, newb) | tiltRight(newb, newm);
             } else {
-                flag |= tiltRight(newb, newm);
-                flag |= tiltRight(newm, newb);
+                flag = tiltRight(newb, newm) | tiltRight(newm, newb);
             }
-            if (flag&& !visited[newm.r][newm.c][newb.r][newb.c]) {
+            System.out.println("right" + m.toString() + " " + b.toString() + " count = " + count);
+
+            if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
                 visited[newm.r][newm.c][newb.r][newb.c] = true;
                 int result = tilting(newm, newb, count + 1);
-                if(result != -1)
+                System.out.println("result = " + result);
+                if (result != -1)
                     newCount = Math.min(newCount, result);
             }
 
             return newCount;
-        }
-
-        public boolean canMove(Marble m) {
-            return isRange(m) && !isHole(m);
         }
 
         public boolean isRange(Marble m) {
@@ -185,6 +181,8 @@ public class boj15653 {
                     m.tileRight();
                     break;
                 }
+                if(isHole(m))
+                    return true;
                 flag = true;
             }
             return flag;
@@ -198,6 +196,8 @@ public class boj15653 {
                     m.tileLeft();
                     break;
                 }
+                if(isHole(m))
+                    return true;
                 flag = true;
             }
             return flag;
@@ -211,6 +211,8 @@ public class boj15653 {
                     m.tileDown();
                     break;
                 }
+                if(isHole(m))
+                    return true;
                 flag = true;
             }
             return flag;
@@ -224,6 +226,8 @@ public class boj15653 {
                     m.tileUp();
                     break;
                 }
+                if(isHole(m))
+                    return true;
                 flag = true;
             }
             return flag;
