@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 public class boj15653 {
@@ -8,6 +10,21 @@ public class boj15653 {
 
     static class Marble {
         private int r, c;
+        public boolean inHole;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Marble marble = (Marble) o;
+            return r == marble.r &&
+                    c == marble.c;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(r, c);
+        }
 
         @Override
         public String toString() {
@@ -17,11 +34,13 @@ public class boj15653 {
         Marble(int a, int b) {
             r = a;
             c = b;
+            this.inHole = false;
         }
 
         Marble(Marble a) {
             r = a.r;
             c = a.c;
+            inHole = false;
         }
 
         public void tileLeft() {
@@ -46,13 +65,24 @@ public class boj15653 {
         private int hole_r, hole_c;
         private Character[][] map;
         private Marble red, blue;
-        private boolean[][][][] visited = new boolean[11][11][11][11];
+
+        private int[][][][] visited = new int[11][11][11][11];
 
         Board(int a, int b) {
             R = a;
             C = b;
 
             map = new Character[a][b];
+
+            for (int i = 0; i < 11; i++) {
+                for (int j = 0; j < 11; j++) {
+                    for (int k = 0; k < 11; k++) {
+                        for (int l = 0; l < 11; l++) {
+                            visited[i][j][k][l] = Integer.MAX_VALUE;
+                        }
+                    }
+                }
+            }
         }
 
         public void setBoard() throws IOException {
@@ -74,32 +104,46 @@ public class boj15653 {
             }
         }
 
-        public int tilting(Marble m, Marble b, int count) {
+        public boolean noMove(Marble aM, Marble bM, Marble taM, Marble tbM){
+            return aM.equals(taM) && bM.equals(tbM);
+        }
 
+        public boolean nextMove(Marble newm, Marble newb, Marble m, Marble b, int count){
+            return !noMove(newm, newb, m, b) && (visited[newm.r][newm.c][newb.r][newb.c] > count);
+        }
+
+        public int relatedWithHole(Marble m ,Marble b){
             if (isHole(b)) {
                 // blue to hole
-                return -1;
+                return -1 ;
             } else if (isHole(m)) {
                 // red to hole but blue not in hole
-                return count;
+                return 0;
+            } else {
+                return 1;
             }
+        }
 
+        public int tilting(Marble m, Marble b, int count) {
 
             int newCount = Integer.MAX_VALUE;
             // Up
             Marble newm = new Marble(m);
             Marble newb = new Marble(b);
-            boolean flag;
 
-            if (newm.r > newb.r) {
-                flag = tiltUp(newm, newb) | tiltUp(newb, newm);
+            if (newm.r < newb.r) {
+                tiltUp(newm, newb);
             } else {
-                flag = tiltUp(newb, newm) | tiltUp(newm, newb);
+                tiltUp(newb, newm);
             }
-            System.out.println("up" + m.toString() + " " + b.toString() + " count = " + count);
 
-            if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
-                visited[newm.r][newm.c][newb.r][newb.c] = true;
+            if(newm.inHole && !newb.inHole) {
+                return count;
+            }
+
+            if (!newb.inHole && nextMove(newm, newb, m, b, count)) {
+
+                visited[newm.r][newm.c][newb.r][newb.c] = count;
                 int result = tilting(newm, newb, count + 1);
                 if (result != -1)
                     newCount = Math.min(newCount, result);
@@ -110,14 +154,16 @@ public class boj15653 {
             newb = new Marble(b);
 
             if (newm.r > newb.r) {
-                flag = tiltDown(newm, newb) | tiltDown(newb, newm);
+                tiltDown(newm, newb);
             } else {
-                flag = tiltDown(newb, newm) | tiltDown(newm, newb);
+                tiltDown(newb, newm);
             }
-            System.out.println("down" + m.toString() + " " + b.toString() + " count = " + count);
+            if(newm.inHole && !newb.inHole) {
+                return count;
+            }
+            if (!newb.inHole && nextMove(newm, newb, m, b, count)) {
 
-            if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
-                visited[newm.r][newm.c][newb.r][newb.c] = true;
+                visited[newm.r][newm.c][newb.r][newb.c] = count;
                 int result = tilting(newm, newb, count + 1);
                 if (result != -1)
                     newCount = Math.min(newCount, result);
@@ -127,14 +173,16 @@ public class boj15653 {
             newb = new Marble(b);
 
             if (newm.c > newb.c) {
-                flag = tiltLeft(newb, newm) | tiltLeft(newm, newb);
+                tiltLeft(newb, newm);
             } else {
-                flag = tiltLeft(newm, newb) | tiltLeft(newb, newm);
+                tiltLeft(newm, newb);
             }
-            System.out.println("left" + m.toString() + " " + b.toString() + " count = " + count);
+            if(newm.inHole && !newb.inHole) {
+                return count;
+            }
+            if (!newb.inHole && nextMove(newm, newb, m, b, count)) {
 
-            if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
-                visited[newm.r][newm.c][newb.r][newb.c] = true;
+                visited[newm.r][newm.c][newb.r][newb.c] = count;
                 int result = tilting(newm, newb, count + 1);
                 if (result != -1)
                     newCount = Math.min(newCount, result);
@@ -144,16 +192,17 @@ public class boj15653 {
             newb = new Marble(b);
 
             if (newm.c > newb.c) {
-                flag = tiltRight(newm, newb) | tiltRight(newb, newm);
+                tiltRight(newm, newb);
             } else {
-                flag = tiltRight(newb, newm) | tiltRight(newm, newb);
+                tiltRight(newb, newm);
             }
-            System.out.println("right" + m.toString() + " " + b.toString() + " count = " + count);
+            if(newm.inHole && !newb.inHole) {
+                return count;
+            }
+            if (!newb.inHole && nextMove(newm, newb, m, b, count)) {
 
-            if (flag && !visited[newm.r][newm.c][newb.r][newb.c]) {
-                visited[newm.r][newm.c][newb.r][newb.c] = true;
+                visited[newm.r][newm.c][newb.r][newb.c] = count;
                 int result = tilting(newm, newb, count + 1);
-                System.out.println("result = " + result);
                 if (result != -1)
                     newCount = Math.min(newCount, result);
             }
@@ -173,64 +222,125 @@ public class boj15653 {
             return ((m.r == b.r) && (m.c == b.c));
         }
 
-        public boolean tiltLeft(Marble m, Marble b) {
-            boolean flag = false;
+        // m이 더 왼쪽에 있다.
+        public void tiltLeft(Marble m, Marble b) {
             while (true) {
                 m.tileLeft();
-                if (!isRange(m) || isCrash(m, b)) {
+                if (!isRange(m)) {
                     m.tileRight();
                     break;
                 }
-                if(isHole(m))
-                    return true;
-                flag = true;
+
+                if (isHole(m)) {
+                    m.r = m.c = -1;
+                    m.inHole = true;
+                    break;
+                }
             }
-            return flag;
+
+            while (true) {
+                b.tileLeft();
+                if (!isRange(b) || isCrash(b, m)) {
+                    b.tileRight();
+                    break;
+                }
+
+                if (isHole(b)) {
+                    b.r = b.c = -1;
+                    b.inHole = true;
+                    break;
+                }
+            }
         }
 
-        public boolean tiltRight(Marble m, Marble b) {
-            boolean flag = false;
+        public void tiltRight(Marble m, Marble b) {
             while (true) {
                 m.tileRight();
-                if (!isRange(m) || isCrash(m, b)) {
+                if (!isRange(m)) {
                     m.tileLeft();
                     break;
                 }
-                if(isHole(m))
-                    return true;
-                flag = true;
+
+                if (isHole(m)) {
+                    m.r = m.c = -1;
+                    m.inHole = true;
+                    break;
+                }
             }
-            return flag;
+
+            while (true) {
+                b.tileRight();
+                if (!isRange(b) || isCrash(b, m)) {
+                    b.tileLeft();
+                    break;
+                }
+
+                if (isHole(b)) {
+                    b.r = b.c = -1;
+                    b.inHole = true;
+                    break;
+                }
+            }
         }
 
-        public boolean tiltUp(Marble m, Marble b) {
-            boolean flag = false;
+        public void tiltUp(Marble m, Marble b) {
             while (true) {
                 m.tileUp();
-                if (!isRange(m) || isCrash(m, b)) {
+                if (!isRange(m)) {
                     m.tileDown();
                     break;
                 }
-                if(isHole(m))
-                    return true;
-                flag = true;
+
+                if (isHole(m)) {
+                    m.r = m.c = -1;
+                    m.inHole = true;
+                    break;
+                }
             }
-            return flag;
+
+            while (true) {
+                b.tileUp();
+                if (!isRange(b) || isCrash(b, m)) {
+                    b.tileDown();
+                    break;
+                }
+
+                if (isHole(b)) {
+                    b.r = b.c = -1;
+                    b.inHole = true;
+                    break;
+                }
+            }
         }
 
-        public boolean tiltDown(Marble m, Marble b) {
-            boolean flag = false;
+        public void tiltDown(Marble m, Marble b) {
             while (true) {
                 m.tileDown();
-                if (!isRange(m) || isCrash(m, b)) {
+                if (!isRange(m)) {
                     m.tileUp();
                     break;
                 }
-                if(isHole(m))
-                    return true;
-                flag = true;
+
+                if (isHole(m)) {
+                    m.r = m.c = -1;
+                    m.inHole = true;
+                    break;
+                }
             }
-            return flag;
+
+            while (true) {
+                b.tileDown();
+                if (!isRange(b) || isCrash(b, m)) {
+                    b.tileUp();
+                    break;
+                }
+
+                if (isHole(b)) {
+                    b.r = b.c = -1;
+                    b.inHole = true;
+                    break;
+                }
+            }
         }
     }
 
@@ -248,7 +358,9 @@ public class boj15653 {
         board.setBoard();
 
         // Solve Problem
-        bw.write(board.tilting(board.red, board.blue, 0) + "\n");
+        int res = board.tilting(board.red, board.blue, 1);
+
+        bw.write((res == Integer.MAX_VALUE ? -1 : res)                 + "\n");
         bw.flush();
     }
 }
